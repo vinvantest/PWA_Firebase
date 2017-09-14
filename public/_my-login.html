@@ -1,0 +1,113 @@
+<dom-module id="my-login">
+    <template>
+        <firebase-auth
+            id="firebaseLogin"
+            user="{{user}}"
+            status-known="{{statusKnown}}"
+            location="https://brilliant-inferno-6056.firebaseio.com"
+            provider="password"
+            on-error="errorHandler"
+            on-user-created="userSuccessHandler"
+            on-password-changed="userSuccessHandler"
+            on-password-reset="userSuccessHandler"
+            on-user-removed="userSuccessHandler">
+        </firebase-auth>
+
+        <h4>Login</h4>
+        <paper-input label="Email" value="{{email::input}}"></paper-input>
+        <paper-input label="Password" type="password" value="{{password::input}}"></paper-input>
+        <paper-button on-tap="login" raised>Login</paper-button>
+        <br>
+        <div id="message">[[message]]</div>
+        <h3>Login status:</h3>
+        <p>{{computeLoginStatus(statusKnown, user)}}</p>
+    </template>
+
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                is: 'my-login',
+
+                properties: {
+                    message: {
+                        type: String,
+                        value: ''
+                    },
+                    email: {
+                        type: String,
+                        value: ''
+                    },
+                    password: {
+                        type: String,
+                        value: ''
+                    },
+                    user: {
+                        type: Object,
+                        value: null,
+                        notify: true
+                    },
+                    statusKnown: {
+                        type: Boolean,
+                        notify: true
+                    }
+                },
+                login: function () {
+                    var params = {};
+                    params.email = this.email;
+                    params.password = this.password;
+                    this.$.firebaseLogin.login(params);
+                },
+                logout: function () {
+                    this.$.firebaseLogin.logout();
+                },
+                errorHandler: function (e) {
+                    this.message = 'Error: ' + e.detail.message;
+                },
+                userSuccessHandler: function (e) {
+                    this.message = e.type + ' success!';
+                },
+                createUserHandler: function (e) {
+                    this.$.firebaseLogin.createUser(this.email, this.password);
+                },
+                changePasswordHandler: function (e) {
+                    this.$.firebaseLogin.changePassword(this.email, this.password, this.newPassword);
+                },
+                resetPasswordHandler: function (e) {
+                    this.$.firebaseLogin.sendPasswordResetEmail(this.email);
+                },
+                removeUserHandler: function (e) {
+                    this.$.firebaseLogin.removeUser(this.email, this.password);
+                },
+                computeCreateUserDisabled: function (email, password) {
+                    return !email || !password;
+                },
+                computeChangePasswordDisabled: function (email, password, newPassword) {
+                    return !email || !password || !newPassword;
+                },
+                computeResetPasswordDisabled: function (email, password) {
+                    return !email || !password;
+                },
+                computeRemoveUserDisabled: function (email, password) {
+                    return !email || !password;
+                },
+                computeLoginHidden: function (statusKnown, user) {
+                    return !statusKnown || !!user;
+                },
+                computeLogoutHidden: function (statusKnown, user) {
+                    return !statusKnown || !user;
+                },
+                computeLoginStatus: function (statusKnown, user) {
+                    if (statusKnown && user) {
+                        return 'Logged in';
+                    }
+                    if (statusKnown) {
+                        return 'Logged out';
+                    }
+                    return 'Unknown (checking status...)';
+                }
+            });
+        })();
+    </script>
+</dom-module>

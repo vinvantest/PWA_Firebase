@@ -1,0 +1,105 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="my-notes">
+
+  <template>
+
+    <firebase-auth id="auth" user="{{user}}"> </firebase-auth>
+    <firebase-query
+      id="query"
+      path="/users/[[user.uid]]/notes"
+      data="{{notes}}">
+   </firebase-query>
+
+   <template is="dom-if" if="{{!statusKnown || user}}">
+     <div id="card">
+      <div id="notes">
+        <ul id="node-list">
+          <template is="dom-repeat" items="[[notes]]" as="note">
+            <li>
+              <p class="content">[[note.content]]
+              <paper-icon-button icon="clear" note=[[note]] on-tap="_removeNote"></paper-icon-button></p>
+            </li>
+          </template>
+        </ul>
+      </div>
+     </div>
+
+     <paper-input id="inputTxt" name="inputTxtName" value="{{inputTxtValue}}" label="Take a note..." on-changes="_handleInputTxt"></paper-input>
+
+     <div id="note-controls">
+         <paper-button raised id="add" on-tap="_addNote">Add</paper-button>
+     </div>
+   </template>
+
+  </template>
+
+  <script>
+
+//https://github.com/zolastro/HackersWeekMalaga/blob/master/src/my-app/my-app.html
+
+/*
+  //firebase-auth Google provider --> "user" object
+  {
+  	"uid":"GOOicZrZADQMOhUjqGtzh3UiGIj2",
+  	"displayName":"Vinayak Vanarse",
+  	"photoURL":"https://lh5.googleusercontent.com/-GVY334SIV28/AAAAAAAAAAI/AAAAAAAAAF8/76a2XsxEgGk/photo.jpg",
+  	"email":"vinayak.vanarse@gmail.com",
+  	"emailVerified":true,
+  	"phoneNumber":null,
+  	"isAnonymous":false,
+  	"providerData":[
+      			{"uid":"112773197373249639440",
+      			 "displayName":"Vinayak Vanarse",
+      			 "photoURL":"https://lh5.googleusercontent.com/-GVY334SIV28/AAAAAAAAAAI/AAAAAAAAAF8/76a2XsxEgGk/photo.jpg",
+      			 "email":"vinayak.vanarse@gmail.com",
+      			 "phoneNumber":null,
+             "providerId":"google.com"
+      			 }
+      			],
+  	"apiKey":"AIzaSyBnA4Fen4iiDLABQoPUX3ePSDgeoCKjQq0",
+  	"appName":"[DEFAULT]",
+  	"authDomain":"vin-poly-fire.firebaseapp.com",
+  	"stsTokenManager":{
+        		"apiKey":"AIzaSyBnA4Fen4iiDLABQoPUX3ePSDgeoCKjQq0",
+        		"refreshToken":"APRrRCIwECYvcyq-3y8xnOt6wN7vYbM8OtR8s",
+        		"accessToken":"eyJhbGciOiJSUzI1NiIOTczNzMyNUzA",
+        		"expirationTime":1505285846321
+        		},
+  	 "redirectEventId":null
+  }
+*/
+
+  class MyNotes extends Polymer.Element {
+        static get is() { return 'my-notes'; }
+        static get properties() {
+              return {
+                notes: {
+                  type: Object
+                }
+            };
+        }
+        _addNote(){
+              this.$.query.ref.push({
+                content: this.inputTxtValue
+              });
+              this.inputTxtValue = null;
+        }
+
+      _removeNote(e){
+        var key = e.currentTarget.note.$key;
+        this.$.query.ref.child(key).remove();
+      }
+
+    } //end Polymer.Element
+
+    window.customElements.define(MyNotes.is, MyNotes);
+  </script>
+
+</dom-module>

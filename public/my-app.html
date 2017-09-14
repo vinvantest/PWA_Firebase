@@ -1,0 +1,49 @@
+<link rel="import" href="bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="my-login.html">
+
+<dom-module id="my-app">
+  <template>
+
+    <firebase-app
+        auth-domain="[[configFirebase.authDomain]]"
+        database-url="[[configFirebase.databaseURL]]"
+        api-key="[[configFirebase.apiKey]]"
+        storage-bucket="[[configFirebase.storageBucket]]"
+        messaging-sender-id="[[configFirebase.messagingSenderId]]">
+    </firebase-app>
+
+    <my-login></my-login>
+
+  </template>
+
+  <script>
+
+  var configFirebase = {
+    app_name: "vin-poly-fire",
+    authDomain: "vin-poly-fire.firebaseapp.com",
+    databaseURL: "https://vin-poly-fire.firebaseio.com/",
+    apiKey: "AIzaSyBnA4Fen4iiDLABQoPUX3ePSDgeoCKjQq0",
+    storageBucket: "vin-poly-fire.appspot.com",
+    messagingSenderId: "732610726571"
+  };
+
+  class MyApp extends Polymer.Element {
+        static get is() { return 'my-app'; }
+        static get properties() {
+                return {
+                  configFirebase: {
+                  type: Object,
+                  readOnly: true,
+                  value: function(){
+                    return configFirebase;
+                    }
+                  }
+                }
+        }
+      } //end Polymer.Element
+      window.customElements.define(MyApp.is, MyApp);
+
+  </script>
+
+</dom-module>

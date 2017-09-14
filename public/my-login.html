@@ -1,0 +1,60 @@
+<link rel="import" href="bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+
+<dom-module id="my-login">
+
+  <template>
+
+    <firebase-auth
+        id="auth"
+        user="{{user}}"
+        provider="google"
+        status-known="{{statusKnown}}"
+        on-error="_handleError">
+    </firebase-auth>
+
+    <template is="dom-if" if="{{!statusKnown || user}}">
+      <h1>Welcome [[user.displayName]], [[user.email]]</h1>
+    </template>
+
+    <paper-button raised on-tap="_login" hidden$="{{!statusKnown || user}}">Sign in</paper-button>
+    <paper-button raised on-tap="_logout" hidden$="{{!statusKnown || user}}">Sign out</paper-button>
+
+  </template>
+
+  <script>
+
+  class MyLogin extends Polymer.Element {
+        static get is() { return 'my-login'; }
+        static get properties() {
+              return {
+                user: {
+                  type: Object
+                },
+                statusKnown: {
+                  type: Object
+                }
+            };
+        }
+        _login(){
+              return this.$.auth.signInWithPopup()
+              .then(function(response) {// successful authentication response here
+              })
+              .catch(function(error) {// unsuccessful authentication response here
+                console.log('signin error -'+error);
+              });
+        }
+
+        _logout(){
+              return this.$.auth.signOut();
+        }
+
+        _handleError(error){
+              console.log('Error login to Account: '+JSON.stringify(error));
+        }
+
+    } //end Polymer.Element
+    window.customElements.define(MyLogin.is, MyLogin);
+  </script>
+
+</dom-module>

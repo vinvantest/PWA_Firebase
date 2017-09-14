@@ -1,0 +1,62 @@
+<dom-module id="my-app">
+<link rel="import" type="css" href="../styles/app-theme.css">
+<template>
+    <app-router style="display:none;">
+        <app-route path="/" import="/elements/blog.html"></app-route>
+        <app-route path="/artist" import="/elements/artist.html"></app-route>
+        <app-route path="/teacher" import="/elements/teacher.html"></app-route>
+        <app-route path="/research" import="/elements/research.html"></app-route>
+        <app-route path="/contact" import="/elements/contact.html"></app-route>
+        <app-route path="*" import="/elements/blog.html"></app-route>
+    </app-router>
+
+    <!-- Main Area -->
+    <paper-scroll-header-panel main fixed>
+        <!-- Main Toolbar -->
+        <paper-toolbar class="medium-tall">
+
+            <div class="">
+                <div class="app-name">Joyce K. Lee</div>
+                <span class="spacer"></span>
+                <paper-icon-button icon="account-circle" onclick="login.open()" hidden?="{{!statusKnown || user}}"></paper-icon-button>
+                <paper-icon-button icon="account-square" onclick="{{logout}}" hidden?="{{!statusKnown || !user}}"></paper-icon-button>
+                <template if="{{user}}">
+                    {{user.password.username}}
+                </template>
+            </div>
+
+            <div class="bottom center fit">
+                <paper-tabs id="nav" selected="{{selected}}">
+                    <paper-tab><a href="#/"><iron-icon icon="home"></iron-icon></a></paper-tab>
+                    <paper-tab><a href="#/artist"><iron-icon icon="custom-icons:brush"></iron-icon></a></paper-tab>
+                    <paper-tab><a href="#/teacher"><iron-icon icon="custom-icons:apple"></iron-icon></a></paper-tab>
+                    <paper-tab><a href="#/research"><iron-icon icon="custom-icons:book"></iron-icon></a></paper-tab>
+                    <paper-tab><a href="#/contact"><iron-icon icon="mail"></iron-icon></a></paper-tab>
+                </paper-tabs>
+            </div>
+        </paper-toolbar>
+
+        <!-- Main Content -->
+        <div class="content">
+            <neon-animated-pages style="height:100%" id="pages" class="flex" selected="{{selected}}" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
+                <neon-animatable><my-blog user="{{user}}"></my-blog></neon-animatable>
+                <neon-animatable><my-artist user="{{user}}"></my-artist></neon-animatable>
+                <neon-animatable><my-teacher user="{{user}}"></my-teacher></neon-animatable>
+                <neon-animatable><my-research user="{{user}}"></my-research></neon-animatable>
+                <neon-animatable><my-contact user="{{user}}"></my-contact></neon-animatable>
+            </neon-animated-pages>
+        </div>
+
+        <simple-overlay id="login" with-backdrop>
+            <my-login user="{{user}}"></my-login>
+        </simple-overlay>
+    </paper-scroll-header-panel>
+</template>
+
+<script>
+    (function () {
+        Polymer({
+            is: 'my-app'
+        });
+    })();
+</script>
